@@ -108,13 +108,18 @@ class HtmlReport(Plugin):
             report = ImportReport(name=k, fp=None, tests=v)
             self.context['imports'].append(report)
         del self.context['tests']
-        #== 
+        
         html = self.template.render(self.context)
-        self.stream.write(html)
-        self.stream.close()
-        #== 
+
         if self.alternative_stream:
+            # if using an alternatve stream
+            # do not attempt to call self.stream.close()
+            # or receive
+            # AttributeError: '_ReplOutput' object has no attribute 'close'
             self.alternative_stream.write(html)
+        else:
+            self.stream.write(html)
+            self.stream.close()            
 
     def setOutputStream(self, stream):
         # grab for own use
